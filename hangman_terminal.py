@@ -1,19 +1,8 @@
+
 import random
+from pathlib import Path
 
 MAX_MISTAKES = 6
-
-WORDS = [
-    "PYTHON",
-    "COMPUTER",
-    "SECURITY",
-    "NETWORK",
-    "DATABASE",
-    "ALGORITHM",
-    "DEVELOPER",
-    "HANGMAN",
-    "SOFTWARE",
-    "HARDWARE",
-]
 
 HANGMAN_STAGES = [
     """
@@ -82,11 +71,31 @@ HANGMAN_STAGES = [
 ]
 
 
+def load_words():
+    words_file = Path(__file__).resolve().parent / "words.txt"
+
+    try:
+        with words_file.open("r", encoding="utf-8") as file:
+            words = [
+                line.strip().upper()
+                for line in file
+                if line.strip().isalpha()
+            ]
+    except FileNotFoundError:
+        raise SystemExit("Error: words.txt was not found.")
+
+    if not words:
+        raise SystemExit("Error: words.txt contains no valid words.")
+
+    return words
+
+
 def display_game(word, guessed_letters, mistakes):
     print(HANGMAN_STAGES[mistakes])
 
     masked_word = " ".join(
-        letter if letter in guessed_letters else "_" for letter in word
+        letter if letter in guessed_letters else "_"
+        for letter in word
     )
 
     print("Word:", masked_word)
@@ -94,8 +103,8 @@ def display_game(word, guessed_letters, mistakes):
     print("Guessed letters:", " ".join(sorted(guessed_letters)) or "None")
 
 
-def play_hangman():
-    secret_word = random.choice(WORDS)
+def play_hangman(words):
+    secret_word = random.choice(words)
     guessed_letters = set()
     mistakes = 0
 
@@ -112,7 +121,7 @@ def play_hangman():
         guess = input("\nEnter a letter: ").strip().upper()
 
         if len(guess) != 1 or not guess.isalpha():
-            print("Invalid input. Enter one letter from A to Z.")
+            print("Invalid input. Enter one letter.")
             continue
 
         if guess in guessed_letters:
@@ -133,8 +142,10 @@ def play_hangman():
 
 
 def main():
+    words = load_words()
+
     while True:
-        play_hangman()
+        play_hangman(words)
 
         play_again = input("\nPlay again? (y/n): ").strip().lower()
 
