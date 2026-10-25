@@ -1,0 +1,12 @@
+python
+security
+computer
+algorithm
+developer
+terminal
+function
+variable
+database
+network
+firewall
+encryption
